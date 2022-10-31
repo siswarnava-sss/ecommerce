@@ -1,8 +1,12 @@
-FROM node:14.17.0-alpine as build-step
-RUN mkdir -p /app
+FROM node:14.17.0-alpine as node
+
 WORKDIR /app
-COPY package.json /app
+
+COPY . .
+
 RUN npm install
-COPY . /app
-CMD [ "npm","start" ]
-EXPOSE 4200
+RUN npm run build
+
+
+FROM nginx:alpine
+COPY --from=node /app/dist/shop/ /usr/share/nginx/html
